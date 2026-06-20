@@ -1,0 +1,6 @@
+---
+app_user: appuser
+app_dir: /opt/task-tracker
+image_tag: latest
+server_name: "_"
+app_port: 8000

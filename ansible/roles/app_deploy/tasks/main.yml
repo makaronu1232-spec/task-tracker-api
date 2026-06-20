@@ -1,0 +1,39 @@
+---
+- name: Copy docker-compose.yml to server
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ app_dir }}/docker-compose.yml"
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: "0640"
+
+- name: Copy .env file to server
+  ansible.builtin.template:
+    src: .env.j2
+    dest: "{{ app_dir }}/.env"
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: "0600"
+
+- name: Pull latest image from GHCR
+  community.docker.docker_image:
+    name: "ghcr.io/{{ ghcr_username }}/task-tracker-api"
+    tag: "{{ image_tag }}"
+    source: pull
+    force_source: true
+
+- name: Run docker compose up
+  community.docker.docker_compose_v2:
+    project_src: "{{ app_dir }}"
+    recreate: auto
+    pull: never
+    state: present
+
+- name: Wait for API healthcheck
+  ansible.builtin.uri:
+    url: "http://localhost:{{ app_port }}/health"
+    status_code: 200
+  register: health
+  retries: 10
+  delay: 5
+  until: health.status == 200

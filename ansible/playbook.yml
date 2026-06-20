@@ -1,0 +1,20 @@
+---
+- name: Provision and deploy Task Tracker API
+  hosts: app_servers
+  become: true
+
+  vars_files:
+    - vars.yml
+
+  roles:
+    - role: server_setup
+      tags: setup
+
+    - role: docker
+      tags: docker
+
+    - role: nginx
+      tags: nginx
+
+    - role: app_deploy
+      tags: deploy
