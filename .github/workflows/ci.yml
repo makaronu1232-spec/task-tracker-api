@@ -43,7 +43,7 @@ jobs:
           POSTGRES_DB: test
           POSTGRES_HOST: localhost
           POSTGRES_PORT: 5432
-        run: pytest tests/ --cov=app --cov-report=xml --cov-fail-under=70 -v
+        run: python -m pytest tests/ --cov=app --cov-report=xml --cov-fail-under=70 -v
 
   build-and-push:
     name: Build and Push
